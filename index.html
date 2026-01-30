@@ -17,45 +17,77 @@ body{display:flex;height:100vh;background:#f4f6f8}
 
 /* ===== MENU ===== */
 .menu{padding:15px;overflow:auto}
-.menu-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.35);
-padding:12px;margin-bottom:10px;border-radius:6px;cursor:pointer;font-weight:600}
-.menu-item:hover,.menu-item.active{background:#fff;border-left:6px solid #ff6f00}
+.menu-item{
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,.35);
+    padding:12px;margin-bottom:10px;
+    border-radius:6px;cursor:pointer;font-weight:600
+}
+.menu-item:hover,.menu-item.active{
+    background:#fff;border-left:6px solid #ff6f00
+}
 .menu-item img{width:28px;height:28px}
 
-.submenu{display:none;margin-left:38px}
-.submenu-item{padding:8px;background:rgba(255,255,255,.6);border-radius:5px;margin-bottom:6px;
-cursor:pointer;font-size:14px}
+.submenu{display:none;margin-left:38px;margin-bottom:10px}
+.submenu-item{
+    padding:8px 10px;background:rgba(255,255,255,.6);
+    border-radius:5px;margin-bottom:6px;
+    cursor:pointer;font-size:14px
+}
 .submenu-item:hover{background:#fff}
 
 /* ===== CONTENT ===== */
 .content{flex:1;background:#fff;padding:20px;display:flex;flex-direction:column}
 .top-bar{display:flex;gap:10px;margin-bottom:10px}
-.top-bar input{flex:1;padding:10px 15px;border-radius:20px;border:none;background:#ff7a00;color:#fff}
+.top-bar input{
+    flex:1;padding:10px 15px;border-radius:20px;border:none;
+    background:#ff7a00;color:#fff
+}
 .top-bar input::placeholder{color:#fff}
-.top-bar button{border:none;background:#ff7a00;color:#fff;padding:10px 14px;border-radius:50%}
-
+.top-bar button{
+    border:none;background:#ff7a00;color:#fff;
+    padding:10px 14px;border-radius:50%
+}
 .breadcrumb{font-size:14px;margin-bottom:10px;text-decoration:underline}
-.content-box{flex:1;background:#f0f0f0;border-radius:10px;padding:15px}
+.content-box{flex:1;background:#f0f0f0;border-radius:10px;padding:15px;overflow:hidden}
 
 /* ===== TABLE ===== */
-.table-wrap{height:100%;overflow:auto;background:#fff;border-radius:10px}
+.search-box{display:flex;align-items:center;gap:10px}
+.search-box input{
+    width:280px;padding:8px 12px;
+    border-radius:20px;border:1px solid #ccc
+}
+.table-wrap{
+    height:100%;overflow:auto;background:#fff;border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1)
+}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{border:1px solid #ddd;padding:8px;text-align:center}
-th{background:#ff7a00;color:#fff;position:sticky;top:0}
-td.name{text-align:left;min-width:200px;white-space:nowrap}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+th{
+    background:linear-gradient(135deg,#ff8c2a,#ff6f00);
+    color:#fff;position:sticky;top:0
+}
+td.name{
+    text-align:left;
+    min-width:220px;
+    white-space:nowrap;
+    padding-left:10px
+}
 tr:nth-child(even){background:#fafafa}
 tr:hover{background:#fff3e6}
 
-.search-box{display:flex;justify-content:flex-end;margin-bottom:8px}
-.search-box input{width:280px;padding:8px 12px;border-radius:20px;border:1px solid #ccc}
-
-.highlight{background:#ffe0b2;border-radius:3px;padding:2px 4px}
+/* ===== HIGHLIGHT ===== */
+.highlight{
+    background:#a8d8ff;
+    padding:2px 4px;
+    border-radius:3px
+}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- ===== SIDEBAR ===== -->
 <div class="sidebar">
     <div class="sidebar-header">
         <div class="logo">
@@ -63,16 +95,8 @@ tr:hover{background:#fff3e6}
         </div>
         <div class="title">HỆ THỐNG CHI BỘ<br>ẤP RẠCH LĂNG</div>
     </div>
-<!-- ===== SIDEBAR ===== -->
-<div class="sidebar">
-    <div class="sidebar-header">
-        <div class="logo">
-            <img src="https://i.pinimg.com/736x/e5/4c/92/e54c920cc8303e39430071926b72d087.jpg">
-        </div>
-        <div class="title">
-            HỆ THỐNG CHI BỘ<br>ẤP RẠCH LĂNG
-        </div>
-    </div>
+<!-- ===== Menu ===== -->
+
 
     <div class="menu">
 
@@ -133,7 +157,7 @@ tr:hover{background:#fff3e6}
 </div>
 
 <script>
-const SHEET_URL =
+const sheetURL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-knMwcoxT3R9Qbmr8wAEvGR4YKo4Hdq0_XfRnHJArHkACtqan8RjMV1Zve1a9KiYXUZNBmQO0ssq0/pub?output=csv";
 
 function toggleSub(el){
@@ -141,35 +165,46 @@ function toggleSub(el){
     sub.style.display = sub.style.display==="block"?"none":"block";
 }
 
+function loadSimple(el,name){
+    document.getElementById("breadcrumb").innerText="Trang chủ / "+name;
+    document.getElementById("mainContent").innerHTML =
+        `<h3 style="color:#ff6f00">${name}</h3>
+         <p style="margin-top:10px;color:#555">Nội dung đang cập nhật…</p>`;
+}
+
 function loadDanhSach(){
     document.getElementById("breadcrumb").innerText =
-        "Trang chủ / Thông tin nhân khẩu / Danh sách nhân khẩu";
+        "Trang chủ / Thông tin nhân khẩu / Danh sách";
 
     document.getElementById("mainContent").innerHTML = `
-        <h3 style="color:#ff6f00;margin-bottom:10px">📋 DANH SÁCH NHÂN KHẨU</h3>
-
-        <div class="search-box">
-            <input placeholder="🔎 Tìm nhanh..." oninput="quickSearch(this)">
-        </div>
-
-        <div class="table-wrap">
-            <table id="dataTable"></table>
+        <div style="display:flex;flex-direction:column;height:100%;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h3 style="color:#ff6f00">📋 DANH SÁCH NHÂN KHẨU</h3>
+                <div class="search-box">
+                    <input placeholder="Tìm tên, năm sinh, CCCD"
+                           oninput="quickFilter(this)">
+                    <span id="resultCount" style="font-size:13px;color:#555"></span>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table id="dataTable"></table>
+            </div>
         </div>
     `;
 
-    fetch(SHEET_URL)
-        .then(r=>r.text())
-        .then(csv=>renderTable(csv));
+    fetch(sheetURL).then(r=>r.text()).then(csv=>renderTable(csv));
 }
 
+
 function renderTable(csv){
-    const rows = csv.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+    const rows = csv.trim().split("\n")
+        .map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+
     let html = `
     <tr>
         <th>STT</th>
         <th>Họ và tên</th>
-        <th>Nam</th>
-        <th>Nữ</th>
+        <th>Năm sinh</th>
         <th>Quan hệ</th>
         <th>CCCD</th>
         <th>BHYT</th>
@@ -179,12 +214,13 @@ function renderTable(csv){
 
     for(let i=1;i<rows.length;i++){
         const [stt,hoten,nam,nu,quanhe,cccd,bhyt,dt,ghichu]=rows[i];
-        html+=`
+        const namsinh = nam || nu;
+
+        html += `
         <tr>
             <td>${stt||""}</td>
             <td class="name">${hoten||""}</td>
-            <td>${nam||""}</td>
-            <td>${nu||""}</td>
+            <td>${namsinh||""}</td>
             <td>${quanhe||""}</td>
             <td>${cccd||""}</td>
             <td>${bhyt||""}</td>
@@ -195,18 +231,37 @@ function renderTable(csv){
     document.getElementById("dataTable").innerHTML = html;
 }
 
-function quickSearch(input){
-    const key=input.value.toLowerCase();
-    document.querySelectorAll("#dataTable tr").forEach((r,i)=>{
-        if(i===0) return;
-        r.style.display = r.innerText.toLowerCase().includes(key)?"":"none";
+function quickFilter(input){
+    const key = input.value.toLowerCase().trim();
+    const rows = document.querySelectorAll("#dataTable tr");
+    let count = 0;
+
+    rows.forEach((row,index)=>{
+        if(index===0) return;
+
+        const nameCell = row.querySelector("td.name");
+        nameCell.innerHTML = nameCell.textContent;
+
+        const rowText = row.innerText.toLowerCase();
+
+        if(rowText.includes(key)){
+            row.style.display="";
+            count++;
+            if(key){
+                const regex = new RegExp(`(${key})`,"gi");
+                nameCell.innerHTML =
+                    nameCell.textContent.replace(regex,
+                    `<span class="highlight">$1</span>`);
+            }
+        }else{
+            row.style.display="none";
+        }
     });
+
+    document.getElementById("resultCount").innerText =
+        key ? `Tìm thấy ${count} kết quả` : "";
 }
 </script>
 
-
 </body>
 </html>
-
-
-
