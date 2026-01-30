@@ -198,13 +198,14 @@ function loadDanhSach(){
 
 function renderTable(csv){
     const rows = csv.trim().split("\n")
-        .map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+        .map(r => r.split(",").map(c => c.replace(/"/g,"")));
 
     let html = `
     <tr>
         <th>STT</th>
         <th>Họ và tên</th>
-        <th>Năm sinh</th>
+        <th>Nam</th>
+        <th>Nữ</th>
         <th>Quan hệ</th>
         <th>CCCD</th>
         <th>BHYT</th>
@@ -213,21 +214,24 @@ function renderTable(csv){
     </tr>`;
 
     for(let i=1;i<rows.length;i++){
-        const [stt,hoten,nam,nu,quanhe,cccd,bhyt,dt,ghichu]=rows[i];
-        const namsinh = nam || nu;
+        const [
+            stt, hoten, nam, nu, quanhe, cccd, bhyt, dienthoai, ghichu
+        ] = rows[i];
 
         html += `
         <tr>
-            <td>${stt||""}</td>
-            <td class="name">${hoten||""}</td>
-            <td>${namsinh||""}</td>
-            <td>${quanhe||""}</td>
-            <td>${cccd||""}</td>
-            <td>${bhyt||""}</td>
-            <td>${dt||""}</td>
-            <td>${ghichu||""}</td>
+            <td>${stt || ""}</td>
+            <td class="name">${hoten || ""}</td>
+            <td>${nam || ""}</td>
+            <td>${nu || ""}</td>
+            <td>${quanhe || ""}</td>
+            <td>${cccd || ""}</td>
+            <td>${bhyt || ""}</td>
+            <td>${dienthoai || ""}</td>
+            <td>${ghichu || ""}</td>
         </tr>`;
     }
+
     document.getElementById("dataTable").innerHTML = html;
 }
 
@@ -236,31 +240,49 @@ function quickFilter(input){
     const rows = document.querySelectorAll("#dataTable tr");
     let count = 0;
 
-    rows.forEach((row,index)=>{
-        if(index===0) return;
+    rows.forEach((row, index)=>{
+        if(index === 0) return; // bỏ header
 
+        const cells = row.querySelectorAll("td");
         const nameCell = row.querySelector("td.name");
+
+        if(!cells.length || !nameCell) return;
+
+        // reset highlight tên
         nameCell.innerHTML = nameCell.textContent;
 
-        const rowText = row.innerText.toLowerCase();
+        const hoTen = cells[1].innerText.toLowerCase(); // Họ và tên
+        const nam = cells[2].innerText.toLowerCase();   // Nam
+        const nu  = cells[3].innerText.toLowerCase();   // Nữ
 
-        if(rowText.includes(key)){
-            row.style.display="";
+        const match =
+            hoTen.includes(key) ||
+            nam.includes(key) ||
+            nu.includes(key);
+
+        if(match){
+            row.style.display = "";
             count++;
-            if(key){
-                const regex = new RegExp(`(${key})`,"gi");
+
+            // chỉ bôi xanh trong HỌ TÊN
+            if(key && hoTen.includes(key)){
+                const regex = new RegExp(`(${key})`, "gi");
                 nameCell.innerHTML =
-                    nameCell.textContent.replace(regex,
-                    `<span class="highlight">$1</span>`);
+                    nameCell.textContent.replace(
+                        regex,
+                        `<span class="highlight">$1</span>`
+                    );
             }
         }else{
-            row.style.display="none";
+            row.style.display = "none";
         }
     });
 
     document.getElementById("resultCount").innerText =
         key ? `Tìm thấy ${count} kết quả` : "";
 }
+
+
 </script>
 
 </body>
