@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Hệ thống Chi bộ Ấp Rạch Lăng</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{display:flex;height:100vh;background:#f4f6f8}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+    width:300px;
+    background:#ff8c2a;
+    display:flex;
+    flex-direction:column;
+}
+.sidebar-header{
+    background:#ff6f00;
+    padding:20px;
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+.logo{
+    width:60px;height:60px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#fff;
+}
+.logo img{width:100%;height:100%;object-fit:cover}
+.title{font-size:18px;font-weight:bold;line-height:1.3}
+
+/* ===== MENU ===== */
+.menu{padding:15px;overflow:auto}
+.menu-item{
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,.35);
+    padding:12px;margin-bottom:10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.3s;
+}
+.menu-item:hover,.menu-item.active{
+    background:#fff;
+    border-left:6px solid #ff6f00;
+}
+.menu-item img{width:28px;height:28px}
+
+.submenu{
+    display:none;
+    margin-left:38px;
+    margin-bottom:10px;
+}
+.submenu-item{
+    padding:8px 10px;
+    background:rgba(255,255,255,.6);
+    border-radius:5px;
+    margin-bottom:6px;
+    cursor:pointer;
+    font-size:14px;
+}
+.submenu-item:hover{background:#fff}
+
+/* ===== CONTENT ===== */
+.content{
+    flex:1;
+    background:#fff;
+    padding:20px 25px;
+    display:flex;
+    flex-direction:column;
+}
+.top-bar{
+    display:flex;gap:10px;
+    margin-bottom:10px;
+}
+.top-bar input{
+    flex:1;
+    padding:10px 15px;
+    border-radius:20px;
+    border:none;
+    background:#ff7a00;
+    color:#fff;
+}
+.top-bar input::placeholder{color:#fff}
+.top-bar button{
+    border:none;
+    background:#ff7a00;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:50%;
+}
+.breadcrumb{
+    font-size:14px;
+    margin-bottom:10px;
+    text-decoration:underline;
+}
+.content-box{
+    flex:1;
+    background:#f0f0f0;
+    border-radius:10px;
+    padding:20px;
+    overflow:hidden;
+}
+
+/* ===== TABLE UI ===== */
+.search-box{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
+}
+.search-box input{
+    width:280px;
+    padding:8px 12px;
+    border-radius:20px;
+    border:1px solid #ccc;
+}
+.table-wrap{
+    overflow:auto;
+    max-height:100%;
+    background:#fff;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+}
+th{
+    background:linear-gradient(135deg,#ff8c2a,#ff6f00);
+    color:#fff;
+    padding:10px;
+    position:sticky;
+    top:0;
+}
+td{
+    padding:8px 10px;
+    border-bottom:1px solid #eee;
+}
+tr:nth-child(even){background:#fafafa}
+tr:hover{background:#fff3e6}
+</style>
+</head>
+
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <img src="https://i.pinimg.com/736x/e5/4c/92/e54c920cc8303e39430071926b72d087.jpg">
+        </div>
+        <div class="title">
+            HỆ THỐNG CHI BỘ<br>ẤP RẠCH LĂNG
+        </div>
+    </div>
+
+    <div class="menu">
+
+        <div class="menu-item" onclick="toggleSub(this)">
+            <img src="https://png.pngtree.com/png-vector/20220819/ourmid/pngtree-rounded-vector-icon-with-flat-eco-green-color-depicting-demography-chart-vector-png-image_19602230.png">
+            <span>Thông tin nhân khẩu</span>
+        </div>
+
+        <div class="submenu">
+            <div class="submenu-item" onclick="loadDanhSach()">📋 Danh sách nhân khẩu</div>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Đảng viên Chi bộ')">
+            <img src="https://hienlaptop.com/wp-content/uploads/2024/12/vector-bua-liem-17.png">
+            <span>Đảng viên Chi bộ</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Ấp đội')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Head_badge_of_the_Vietnam_Self-Defence_Militia.svg/250px-Head_badge_of_the_Vietnam_Self-Defence_Militia.svg.png">
+            <span>Ấp đội</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Hội Nông dân')">
+            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/08/logo-hoi-nong-dan-viet-nam.png">
+            <span>Hội Nông dân</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Hội Phụ nữ')">
+            <img src="https://upload.wikimedia.org/wikipedia/vi/d/df/Logo_H%E1%BB%99i_LHPN_Vi%E1%BB%87t_Nam.png">
+            <span>Hội Phụ nữ</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Hội Cựu chiến binh')">
+            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/08/logo-hoi-cuu-chien-binh-viet-nam.png">
+            <span>Hội Cựu chiến binh</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Chi đoàn')">
+            <img src="https://upload.wikimedia.org/wikipedia/vi/0/09/Huy_Hi%E1%BB%87u_%C4%90o%C3%A0n.png">
+            <span>Chi đoàn</span>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="content">
+    <div class="top-bar">
+        <input placeholder="Tìm kiếm toàn hệ thống">
+        <button>🔍</button>
+    </div>
+
+    <div class="breadcrumb" id="breadcrumb">Trang chủ</div>
+
+    <div class="content-box" id="mainContent">
+        Chọn chức năng bên trái để hiển thị dữ liệu
+    </div>
+</div>
+
+<script>
+const sheetURL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vT-knMwcoxT3R9Qbmr8wAEvGR4YKo4Hdq0_XfRnHJArHkACtqan8RjMV1Zve1a9KiYXUZNBmQO0ssq0/pub?gid=1811940739&single=true&output=csv";
+
+function toggleSub(el){
+    const sub = el.nextElementSibling;
+    document.querySelectorAll('.submenu').forEach(s=>s.style.display="none");
+    sub.style.display = "block";
+}
+
+function loadDanhSach(){
+    breadcrumb.innerText="Trang chủ / Thông tin nhân khẩu / Danh sách nhân khẩu";
+    mainContent.innerHTML=`
+        <div style="display:flex;flex-direction:column;height:100%;gap:12px">
+            <div style="background:#fff;padding:15px;border-radius:10px;
+                        display:flex;justify-content:space-between;align-items:center">
+                <h3 style="color:#ff6f00">📋 DANH SÁCH NHÂN KHẨU</h3>
+                <div class="search-box">
+                    <input placeholder="🔎 Tìm nhanh..." oninput="quickFilter(this)">
+                    <span id="resultCount" style="font-size:13px;color:#666"></span>
+                </div>
+            </div>
+            <div style="flex:1;background:#fff;border-radius:10px;padding:10px">
+                <div class="table-wrap">
+                    <table id="dataTable"></table>
+                </div>
+            </div>
+        </div>`;
+    fetch(sheetURL).then(r=>r.text()).then(renderTable);
+}
+
+function renderTable(csv){
+    const rows = csv.trim().split("\n").map(r=>r.split(","));
+    const headers = rows[0];
+    const nameIndex = headers.findIndex(h =>
+        h.toLowerCase().includes("họ") || h.toLowerCase().includes("tên")
+    );
+
+    let html="<tr>";
+    headers.forEach(h=>html+=`<th>${h}</th>`);
+    html+="</tr>";
+
+    for(let i=1;i<rows.length;i++){
+        html+="<tr>";
+        rows[i].forEach((c,idx)=>{
+            html+= idx===nameIndex
+                ? `<td style="min-width:220px;font-weight:600">${c}</td>`
+                : `<td>${c}</td>`;
+        });
+        html+="</tr>";
+    }
+    dataTable.innerHTML=html;
+}
+
+function quickFilter(input){
+    const key=input.value.toLowerCase().trim();
+    let count=0;
+    document.querySelectorAll("#dataTable tr").forEach((r,i)=>{
+        if(i===0) return;
+        r.querySelectorAll("td").forEach(td=>td.innerHTML=td.textContent);
+        if(r.innerText.toLowerCase().includes(key)){
+            r.style.display="";
+            count++;
+            if(key){
+                r.querySelectorAll("td").forEach(td=>{
+                    td.innerHTML=td.textContent.replace(
+                        new RegExp(`(${key})`,"gi"),
+                        `<span class="highlight">$1</span>`
+                    );
+                });
+            }
+        }else r.style.display="none";
+    });
+    resultCount.innerText=key?`Tìm thấy ${count} kết quả`:"";
+}
+</Script>
+
+
+</body>
+</html>
