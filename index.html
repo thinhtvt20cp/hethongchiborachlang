@@ -216,83 +216,79 @@ tr:hover{background:#fff3e6}
 </div>
 
 <script>
-const sheetURL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vT-knMwcoxT3R9Qbmr8wAEvGR4YKo4Hdq0_XfRnHJArHkACtqan8RjMV1Zve1a9KiYXUZNBmQO0ssq0/pub?gid=1811940739&single=true&output=csv";
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vT-knMwcoxT3R9Qbmr8wAEvGR4YKo4Hdq0_XfRnHJArHkACtqan8RjMV1Zve1a9KiYXUZNBmQO0ssq0/pub?output=csv";
 
 function toggleSub(el){
     const sub = el.nextElementSibling;
-    document.querySelectorAll('.submenu').forEach(s=>s.style.display="none");
-    sub.style.display = "block";
+    sub.style.display = sub.style.display==="block"?"none":"block";
 }
 
 function loadDanhSach(){
-    breadcrumb.innerText="Trang chủ / Thông tin nhân khẩu / Danh sách nhân khẩu";
-    mainContent.innerHTML=`
-        <div style="display:flex;flex-direction:column;height:100%;gap:12px">
-            <div style="background:#fff;padding:15px;border-radius:10px;
-                        display:flex;justify-content:space-between;align-items:center">
-                <h3 style="color:#ff6f00">📋 DANH SÁCH NHÂN KHẨU</h3>
-                <div class="search-box">
-                    <input placeholder="🔎 Tìm nhanh..." oninput="quickFilter(this)">
-                    <span id="resultCount" style="font-size:13px;color:#666"></span>
-                </div>
-            </div>
-            <div style="flex:1;background:#fff;border-radius:10px;padding:10px">
-                <div class="table-wrap">
-                    <table id="dataTable"></table>
-                </div>
-            </div>
-        </div>`;
-    fetch(sheetURL).then(r=>r.text()).then(renderTable);
+    document.getElementById("breadcrumb").innerText =
+        "Trang chủ / Thông tin nhân khẩu / Danh sách nhân khẩu";
+
+    document.getElementById("mainContent").innerHTML = `
+        <h3 style="color:#ff6f00;margin-bottom:10px">📋 DANH SÁCH NHÂN KHẨU</h3>
+
+        <div class="search-box">
+            <input placeholder="🔎 Tìm nhanh..." oninput="quickSearch(this)">
+        </div>
+
+        <div class="table-wrap">
+            <table id="dataTable"></table>
+        </div>
+    `;
+
+    fetch(SHEET_URL)
+        .then(r=>r.text())
+        .then(csv=>renderTable(csv));
 }
 
 function renderTable(csv){
-    const rows = csv.trim().split("\n").map(r=>r.split(","));
-    const headers = rows[0];
-    const nameIndex = headers.findIndex(h =>
-        h.toLowerCase().includes("họ") || h.toLowerCase().includes("tên")
-    );
-
-    let html="<tr>";
-    headers.forEach(h=>html+=`<th>${h}</th>`);
-    html+="</tr>";
+    const rows = csv.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+    let html = `
+    <tr>
+        <th>STT</th>
+        <th>Họ và tên</th>
+        <th>Nam</th>
+        <th>Nữ</th>
+        <th>Quan hệ</th>
+        <th>CCCD</th>
+        <th>BHYT</th>
+        <th>Điện thoại</th>
+        <th>Ghi chú</th>
+    </tr>`;
 
     for(let i=1;i<rows.length;i++){
-        html+="<tr>";
-        rows[i].forEach((c,idx)=>{
-            html+= idx===nameIndex
-                ? `<td style="min-width:220px;font-weight:600">${c}</td>`
-                : `<td>${c}</td>`;
-        });
-        html+="</tr>";
+        const [stt,hoten,nam,nu,quanhe,cccd,bhyt,dt,ghichu]=rows[i];
+        html+=`
+        <tr>
+            <td>${stt||""}</td>
+            <td class="name">${hoten||""}</td>
+            <td>${nam||""}</td>
+            <td>${nu||""}</td>
+            <td>${quanhe||""}</td>
+            <td>${cccd||""}</td>
+            <td>${bhyt||""}</td>
+            <td>${dt||""}</td>
+            <td>${ghichu||""}</td>
+        </tr>`;
     }
-    dataTable.innerHTML=html;
+    document.getElementById("dataTable").innerHTML = html;
 }
 
-function quickFilter(input){
-    const key=input.value.toLowerCase().trim();
-    let count=0;
+function quickSearch(input){
+    const key=input.value.toLowerCase();
     document.querySelectorAll("#dataTable tr").forEach((r,i)=>{
         if(i===0) return;
-        r.querySelectorAll("td").forEach(td=>td.innerHTML=td.textContent);
-        if(r.innerText.toLowerCase().includes(key)){
-            r.style.display="";
-            count++;
-            if(key){
-                r.querySelectorAll("td").forEach(td=>{
-                    td.innerHTML=td.textContent.replace(
-                        new RegExp(`(${key})`,"gi"),
-                        `<span class="highlight">$1</span>`
-                    );
-                });
-            }
-        }else r.style.display="none";
+        r.style.display = r.innerText.toLowerCase().includes(key)?"":"none";
     });
-    resultCount.innerText=key?`Tìm thấy ${count} kết quả`:"";
 }
-</Script>
+</script>
 
 
 </body>
 </html>
+
 
