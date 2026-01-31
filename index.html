@@ -1,3 +1,4 @@
+
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -6,6 +7,28 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{display:flex;height:100vh;background:#f4f6f8}
+th:nth-child(1), td:nth-child(1) { width: 60px;  text-align:center } /* STT */
+th:nth-child(3), td:nth-child(3) { width: 80px;  text-align:center } /* Nam */
+th:nth-child(4), td:nth-child(4) { width: 80px;  text-align:center } /* Nữ */
+th:nth-child(5), td:nth-child(5) { width: 90px;  text-align:center } /* Quan hệ */
+th:nth-child(6), td:nth-child(6) { width: 140px } /* CCCD */
+th:nth-child(7), td:nth-child(7) { width: 140px } /* BHYT */
+th:nth-child(8), td:nth-child(8) { width: 130px } /* Điện thoại */
+/* ===== CỘT QUAN HỆ – CỐ ĐỊNH CHỮ ===== */
+#chuHoTable th:nth-child(5),
+#chuHoTable td:nth-child(5) {
+    width: 90px;          /* cố định độ rộng */
+    min-width: 90px;
+    max-width: 90px;
+    text-align: center;
+    white-space: nowrap;  /* KHÔNG xuống dòng */
+    font-weight: 600;
+}
+/* ===== TÔ MÀU HÀNG CHỦ HỘ ===== */
+.tr-chuho {
+    background: #fff3cd !important;   /* vàng nhạt */
+    font-weight: 600;
+}
 
 /* ===== SIDEBAR ===== */
 .sidebar{width:300px;background:#ff8c2a;display:flex;flex-direction:column}
@@ -106,7 +129,10 @@ tr:hover{background:#fff3e6}
 
         <div class="submenu">
             <div class="submenu-item" onclick="loadDanhSach()">📋 Danh sách nhân khẩu</div>
+        <div class="submenu-item" onclick="loadChuHo()">🏠 Danh sách chủ hộ</div>
         </div>
+        
+    
 
         <div class="menu-item" onclick="loadSimple(this,'Đảng viên Chi bộ')">
             <img src="https://hienlaptop.com/wp-content/uploads/2024/12/vector-bua-liem-17.png">
@@ -221,6 +247,65 @@ function renderTable(csv){
             stt, hoten, nam, nu, quanhe, cccd, bhyt, dienthoai, ghichu
         ] = rows[i];
 
+html += `
+<tr class="${quanhe === "Chủ hộ" ? "tr-chuho" : ""}">
+    <td>${stt || ""}</td>
+    <td class="name">${hoten || ""}</td>
+    <td>${nam || ""}</td>
+    <td>${nu || ""}</td>
+    <td>${quanhe || ""}</td>
+    <td>${cccd || ""}</td>
+    <td>${bhyt || ""}</td>
+    <td>${dienthoai || ""}</td>
+    <td>${ghichu || ""}</td>
+</tr>`;
+
+    }
+
+    document.getElementById("dataTable").innerHTML = html;
+}
+function loadChuHo(){
+    document.getElementById("breadcrumb").innerText =
+        "Trang chủ / Thông tin nhân khẩu / Danh sách chủ hộ";
+
+    document.getElementById("mainContent").innerHTML = `
+        <h3 style="color:#ff6f00;margin-bottom:10px">🏠 DANH SÁCH CHỦ HỘ</h3>
+
+        <div class="table-wrap">
+            <table id="chuHoTable"></table>
+        </div>
+    `;
+
+    fetch(sheetURL)
+        .then(r => r.text())
+        .then(csv => renderChuHo(csv));
+}
+function renderChuHo(csv){
+    const rows = csv.trim().split("\n")
+        .map(r => r.split(",").map(c => c.replace(/"/g,"")));
+
+    let html = `
+    <tr>
+        <th>STT</th>
+        <th>Họ và tên</th>
+        <th>Nam</th>
+        <th>Nữ</th>
+        <th>Quan hệ</th>
+        <th>CCCD</th>
+        <th>BHYT</th>
+        <th>Điện thoại</th>
+        <th>Ghi chú</th>
+    </tr>`;
+
+    for(let i=1;i<rows.length;i++){
+        const [
+            stt, hoten, nam, nu, quanhe,
+            cccd, bhyt, dienthoai, ghichu
+        ] = rows[i];
+
+        // CHỈ LẤY CHỦ HỘ
+        if(quanhe !== "Chủ hộ") continue;
+
         html += `
         <tr>
             <td>${stt || ""}</td>
@@ -235,8 +320,12 @@ function renderTable(csv){
         </tr>`;
     }
 
-    document.getElementById("dataTable").innerHTML = html;
+    document.getElementById("chuHoTable").innerHTML = html;
 }
+
+
+
+
 
 /* ===== TÌM KIẾM CHUẨN – KHÔNG TỔNG QUÁT ===== */
 function quickFilter(input){
@@ -285,9 +374,15 @@ function quickFilter(input){
     document.getElementById("resultCount").innerText =
         key ? `Tìm thấy ${count} kết quả` : "";
 }
+function toggleMember(id){
+    document.querySelectorAll("." + id).forEach(r=>{
+        r.style.display =
+            r.style.display === "none" ? "table-row" : "none";
+    });
+}
+
 </script>
 
 
 </body>
 </html>
-
