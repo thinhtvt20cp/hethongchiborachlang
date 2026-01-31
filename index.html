@@ -29,6 +29,63 @@ th:nth-child(8), td:nth-child(8) { width: 130px } /* Điện thoại */
     background: #fff3cd !important;   /* vàng nhạt */
     font-weight: 600;
 }
+/* ===== ACCOUNT BOTTOM ===== */
+.account{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#ff6f00;
+    padding:12px;
+    border-top:2px solid rgba(255,255,255,.3);
+}
+.account-info{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    color:#fff;
+}
+
+.account-info img{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#fff;
+}
+
+.account-name{
+    font-weight:bold;
+    font-size:14px;
+}
+
+.account-role{
+    font-size:12px;
+    opacity:.9;
+}
+
+.account-menu{
+    display:none;
+    position:absolute;
+    bottom:60px;
+    left:12px;
+    right:12px;
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 4px 10px rgba(0,0,0,.15);
+    overflow:hidden;
+}
+
+.account-menu div{
+    padding:10px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.account-menu div:hover{
+    background:#fff3e6;
+}
+
 
 /* ===== SIDEBAR ===== */
 .sidebar{width:300px;background:#ff8c2a;display:flex;flex-direction:column}
@@ -36,6 +93,14 @@ th:nth-child(8), td:nth-child(8) { width: 130px } /* Điện thoại */
 .logo{width:60px;height:60px;border-radius:50%;overflow:hidden;background:#fff}
 .logo img{width:100%;height:100%;object-fit:cover}
 .title{font-size:18px;font-weight:bold;line-height:1.3}
+.sidebar{
+    width:300px;
+    background:#ff8c2a;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+}
+
 
 /* ===== MENU ===== */
 .menu{padding:15px;overflow:auto}
@@ -95,8 +160,13 @@ td.name{
     white-space:nowrap;
     padding-left:10px
 }
-tr:nth-child(even){background:#fafafa}
-tr:hover{background:#fff3e6}
+tr:nth-child(even){
+    background:#fafafa;
+}
+tr:hover{
+    background:#fff3e6;
+}
+
 
 /* ===== HIGHLIGHT ===== */
 .highlight{
@@ -104,6 +174,20 @@ tr:hover{background:#fff3e6}
     padding:2px 4px;
     border-radius:3px
 }
+/* DÒNG ĐƯỢC TÌM THẤY */
+.found-row{
+    outline:3px solid #ff6f00;
+    outline-offset:-2px;
+    background:#ffe0b2 !important;
+}
+
+/* BÔI CHỮ */
+.highlight{
+    background:#7ecbff;
+    padding:2px 4px;
+    border-radius:3px;
+}
+
 </style>
 </head>
 
@@ -117,6 +201,22 @@ tr:hover{background:#fff3e6}
         </div>
         <div class="title">HỆ THỐNG CHI BỘ<br>ẤP RẠCH LĂNG</div>
     </div>
+<!-- ===== ACCOUNT ===== -->
+<div class="account">
+    <div class="account-info" onclick="toggleAccountMenu()">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+        <div>
+            <div class="account-name">Admin</div>
+            <div class="account-role">Quản trị</div>
+        </div>
+    </div>
+
+    <div class="account-menu" id="accountMenu">
+        <div onclick="alert('Chức năng đang phát triển')">🔑 Đổi mật khẩu</div>
+        <div onclick="logout()">🚪 Đăng xuất</div>
+    </div>
+</div>
+
 <!-- ===== Menu ===== -->
 
 
@@ -208,11 +308,14 @@ function loadDanhSach(){
             <div style="display:flex;justify-content:space-between;align-items:center">
                 <h3 style="color:#ff6f00">📋 DANH SÁCH NHÂN KHẨU</h3>
                 <div class="search-box">
-                    <input placeholder="Tìm họ tên hoặc năm sinh"
-                           oninput="quickFilter(this)">
-                    <span id="resultCount"
-                          style="font-size:13px;color:#555"></span>
-                </div>
+    <input placeholder="Tìm họ tên, năm sinh, CCCD"
+           oninput="quickFilter(this)"
+           onkeydown="handleEnter(event,this)">
+    <button class="nav-btn" onclick="prevResult()">⬆</button>
+    <button class="nav-btn" onclick="nextResult()">⬇</button>
+    <span id="resultCount" style="font-size:13px;color:#555"></span>
+</div>
+
             </div>
             <div class="table-wrap">
                 <table id="dataTable"></table>
@@ -328,61 +431,127 @@ function renderChuHo(csv){
 
 
 /* ===== TÌM KIẾM CHUẨN – KHÔNG TỔNG QUÁT ===== */
+let matchedRows = [];
+let currentIndex = -1;
+
+/* ===== TÌM KIẾM + BÔI CHỮ ===== */
 function quickFilter(input){
     const key = input.value.trim().toLowerCase();
     const rows = document.querySelectorAll("#dataTable tr");
-    let count = 0;
+
+    matchedRows = [];
+    currentIndex = -1;
 
     rows.forEach((row, index)=>{
         if(index === 0) return;
 
+        row.classList.remove("found-row");
+
         const cells = row.querySelectorAll("td");
         if(!cells.length) return;
 
-        const nameCell = cells[1];
-        const namCell  = cells[2];
-        const nuCell   = cells[3];
+        // reset highlight
+        cells.forEach(td=>td.innerHTML = td.textContent);
 
-        nameCell.innerHTML = nameCell.textContent;
+        if(!key) return;
 
-        const hoTen = nameCell.textContent.toLowerCase();
-        const nam   = namCell.textContent.toLowerCase();
-        const nu    = nuCell.textContent.toLowerCase();
+        const text = (
+            cells[1].textContent +
+            cells[2].textContent +
+            cells[3].textContent +
+            cells[5].textContent
+        ).toLowerCase();
 
-        const match =
-            hoTen.includes(key) ||
-            nam.includes(key) ||
-            nu.includes(key);
+        if(text.includes(key)){
+            matchedRows.push(row);
 
-        if(key === "" || match){
-            row.style.display = "";
-            count++;
-
-            if(key && hoTen.includes(key)){
-                const regex = new RegExp(`(${key})`, "gi");
-                nameCell.innerHTML =
-                    nameCell.textContent.replace(
-                        regex,
-                        `<span class="highlight">$1</span>`
-                    );
-            }
-        }else{
-            row.style.display = "none";
+            // chỉ bôi chữ trong cột Họ và tên
+            const regex = new RegExp(`(${key})`, "gi");
+            cells[1].innerHTML =
+                cells[1].textContent.replace(
+                    regex,
+                    `<span class="highlight">$1</span>`
+                );
         }
     });
 
     document.getElementById("resultCount").innerText =
-        key ? `Tìm thấy ${count} kết quả` : "";
+        key ? `Có ${matchedRows.length} kết quả` : "";
 }
-function toggleMember(id){
-    document.querySelectorAll("." + id).forEach(r=>{
-        r.style.display =
-            r.style.display === "none" ? "table-row" : "none";
+
+/* ===== NHẢY TỚI KẾT QUẢ ===== */
+function jumpTo(index){
+    if(index < 0 || index >= matchedRows.length) return;
+
+    matchedRows.forEach(r=>r.classList.remove("found-row"));
+
+    const row = matchedRows[index];
+    row.classList.add("found-row");
+
+    row.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
     });
+
+    currentIndex = index;
 }
+
+/* ===== ENTER → NHẢY TIẾP ===== */
+function handleEnter(e,input){
+    if(e.key === "Enter"){
+        e.preventDefault();
+        nextResult();
+    }
+}
+
+/* ===== NÚT ⬇ ===== */
+function nextResult(){
+    if(!matchedRows.length) return;
+
+    let next = currentIndex + 1;
+    if(next >= matchedRows.length) next = 0;
+
+    jumpTo(next);
+}
+
+/* ===== NÚT ⬆ ===== */
+function prevResult(){
+    if(!matchedRows.length) return;
+
+    let prev = currentIndex - 1;
+    if(prev < 0) prev = matchedRows.length - 1;
+
+    jumpTo(prev);
+}
+
 
 </script>
+<script>
+// ===== KIỂM TRA ĐĂNG NHẬP =====
+const loginUser = JSON.parse(localStorage.getItem("loginUser"));
 
+if(!loginUser){
+    window.location.href = "giaodiends.html";
+}
+</script>
+<script>
+document.getElementById("accountName").innerText = loginUser.name;
+document.getElementById("accountRole").innerText =
+    loginUser.role === "admin" ? "Quản trị" :
+    loginUser.role === "staff" ? "Cán bộ" : "Người xem";
+
+function toggleAccountMenu(){
+    const m = document.getElementById("accountMenu");
+    m.style.display = m.style.display==="block"?"none":"block";
+}
+
+function logout(){
+    if(confirm("Bạn có chắc muốn đăng xuất?")){
+        localStorage.removeItem("loginUser");
+        window.location.href = "giaodiends.html";
+    }
+}
+</script>
 
 </body>
 </html>
