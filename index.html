@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+https://onecompiler.com/html<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -162,11 +162,13 @@ const sheetURL =
 
 function toggleSub(el){
     const sub = el.nextElementSibling;
-    sub.style.display = sub.style.display==="block"?"none":"block";
+    sub.style.display = sub.style.display === "block" ? "none" : "block";
 }
 
 function loadSimple(el,name){
-    document.getElementById("breadcrumb").innerText="Trang chủ / "+name;
+    document.getElementById("breadcrumb").innerText =
+        "Trang chủ / " + name;
+
     document.getElementById("mainContent").innerHTML =
         `<h3 style="color:#ff6f00">${name}</h3>
          <p style="margin-top:10px;color:#555">Nội dung đang cập nhật…</p>`;
@@ -181,9 +183,10 @@ function loadDanhSach(){
             <div style="display:flex;justify-content:space-between;align-items:center">
                 <h3 style="color:#ff6f00">📋 DANH SÁCH NHÂN KHẨU</h3>
                 <div class="search-box">
-                    <input placeholder="Tìm tên, năm sinh, CCCD"
+                    <input placeholder="Tìm họ tên hoặc năm sinh"
                            oninput="quickFilter(this)">
-                    <span id="resultCount" style="font-size:13px;color:#555"></span>
+                    <span id="resultCount"
+                          style="font-size:13px;color:#555"></span>
                 </div>
             </div>
             <div class="table-wrap">
@@ -192,9 +195,10 @@ function loadDanhSach(){
         </div>
     `;
 
-    fetch(sheetURL).then(r=>r.text()).then(csv=>renderTable(csv));
+    fetch(sheetURL)
+        .then(r => r.text())
+        .then(csv => renderTable(csv));
 }
-
 
 function renderTable(csv){
     const rows = csv.trim().split("\n")
@@ -235,36 +239,37 @@ function renderTable(csv){
     document.getElementById("dataTable").innerHTML = html;
 }
 
+/* ===== TÌM KIẾM CHUẨN – KHÔNG TỔNG QUÁT ===== */
 function quickFilter(input){
-    const key = input.value.toLowerCase().trim();
+    const key = input.value.trim().toLowerCase();
     const rows = document.querySelectorAll("#dataTable tr");
     let count = 0;
 
     rows.forEach((row, index)=>{
-        if(index === 0) return; // bỏ header
+        if(index === 0) return;
 
         const cells = row.querySelectorAll("td");
-        const nameCell = row.querySelector("td.name");
+        if(!cells.length) return;
 
-        if(!cells.length || !nameCell) return;
+        const nameCell = cells[1];
+        const namCell  = cells[2];
+        const nuCell   = cells[3];
 
-        // reset highlight tên
         nameCell.innerHTML = nameCell.textContent;
 
-        const hoTen = cells[1].innerText.toLowerCase(); // Họ và tên
-        const nam = cells[2].innerText.toLowerCase();   // Nam
-        const nu  = cells[3].innerText.toLowerCase();   // Nữ
+        const hoTen = nameCell.textContent.toLowerCase();
+        const nam   = namCell.textContent.toLowerCase();
+        const nu    = nuCell.textContent.toLowerCase();
 
         const match =
             hoTen.includes(key) ||
             nam.includes(key) ||
             nu.includes(key);
 
-        if(match){
+        if(key === "" || match){
             row.style.display = "";
             count++;
 
-            // chỉ bôi xanh trong HỌ TÊN
             if(key && hoTen.includes(key)){
                 const regex = new RegExp(`(${key})`, "gi");
                 nameCell.innerHTML =
@@ -281,9 +286,8 @@ function quickFilter(input){
     document.getElementById("resultCount").innerText =
         key ? `Tìm thấy ${count} kết quả` : "";
 }
-
-
 </script>
+
 
 </body>
 </html>
