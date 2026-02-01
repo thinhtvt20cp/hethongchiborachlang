@@ -144,6 +144,21 @@
         .account-menu div:hover {
             background: #fff3e6;
         }
+        
+        .gender-filter button {
+            padding: 6px 14px;
+            border: 1px solid #ff6f00;
+            background: #fff;
+            color: #ff6f00;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .gender-filter button.active {
+            background: #ff6f00;
+            color: #fff;
+        }
         /* ===== SIDEBAR ===== */
         
         .sidebar {
@@ -378,6 +393,7 @@
             <div class="title">HỆ THỐNG CHI BỘ
                 <br>ẤP RẠCH LĂNG</div>
         </div>
+
         <!-- ===== ACCOUNT ===== -->
         <div class="account">
             <div class="account-info" onclick="toggleAccountMenu()">
@@ -416,10 +432,40 @@
                 <span>Đảng viên Chi bộ</span>
             </div>
 
-            <div class="menu-item" onclick="loadSimple(this,'Ấp đội')">
+            <!-- ===== ẤP ĐỘI ===== -->
+            <div class="menu-item" onclick="toggleSub(this)">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Head_badge_of_the_Vietnam_Self-Defence_Militia.svg/250px-Head_badge_of_the_Vietnam_Self-Defence_Militia.svg.png">
                 <span>Ấp đội</span>
             </div>
+
+            <div class="submenu">
+
+                <div class="submenu-item" onclick="loadCongNhan('18-45')">
+                    👷 Công nhân 18–45 tuổi
+                </div>
+
+                <div class="submenu-item" onclick="loadCongNhan('18-27')">
+                    👷 Công nhân 18–27 tuổi
+                </div>
+
+                <div class="submenu-item" onclick="loadSimple(this,'Dân quân tự vệ')">
+                    🪖 Dân quân tự vệ
+                </div>
+
+                <!-- NVQS -->
+                <div class="submenu-item" onclick="toggleSub(this)">
+                    🎯 Danh sách NVQS
+                </div>
+
+                <div class="submenu">
+                    <div class="submenu-item" onclick="loadNVQS('dot1')">📄 Sơ tuyển đợt 1</div>
+                    <div class="submenu-item" onclick="loadNVQS('dot2')">🩺 Khám tuyển đợt 2</div>
+                    <div class="submenu-item" onclick="loadNVQS('trungtuyen')">⭐ Trúng tuyển</div>
+                </div>
+
+            </div>
+
+
 
             <div class="menu-item" onclick="loadSimple(this,'Hội Nông dân')">
                 <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/08/logo-hoi-nong-dan-viet-nam.png">
@@ -605,9 +651,6 @@
             document.getElementById("chuHoTable").innerHTML = html;
         }
 
-
-
-
         /* ===== TÌM KIẾM CHUẨN – KHÔNG TỔNG QUÁT ===== */
         let matchedRows = [];
         let currentIndex = -1;
@@ -701,16 +744,7 @@
 
             jumpTo(prev);
         }
-    </script>
-    <script>
-        // ===== KIỂM TRA ĐĂNG NHẬP =====
-        const loginUser = JSON.parse(localStorage.getItem("loginUser"));
 
-        if (!loginUser) {
-            window.location.href = "giaodiends.html";
-        }
-    </script>
-    <script>
         document.getElementById("accountName").innerText = loginUser.name;
         document.getElementById("accountRole").innerText =
             loginUser.role === "admin" ? "Quản trị" :
@@ -727,7 +761,167 @@
                 window.location.href = "giaodiends.html";
             }
         }
+        const loginUser = JSON.parse(localStorage.getItem("loginUser"));
+        if (!loginUser) {
+            location.href = "login.html";
+        }
+        if (loginUser.role !== "admin") {
+            document.getElementById("menuAccount").style.display = "none";
+        }
+        /* ===== Lọc độ tuổi ===== */
+
+        function loadCongNhan(range) {
+            const yearNow = new Date().getFullYear();
+            const minAge = 18;
+            const maxAge = range === "18-27" ? 27 : 45;
+
+            document.getElementById("breadcrumb").innerText =
+                `Trang chủ / Ấp đội / Công nhân ${minAge}–${maxAge} tuổi`;
+
+            document.getElementById("mainContent").innerHTML = `
+        <div style="display:flex;flex-direction:column;height:100%;gap:10px">
+
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h3 style="color:#ff6f00">
+                    👷 DANH SÁCH CÔNG NHÂN ${minAge}–${maxAge} TUỔI
+                </h3>
+
+                <div class="search-box">
+                    <select id="genderFilter" onchange="applyGenderFilter()">
+                        <option value="all">Tất cả</option>
+                        <option value="nam">Nam</option>
+                        <option value="nu">Nữ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table id="dataTable"></table>
+            </div>
+
+        </div>
+    `;
+
+            fetch(sheetURL)
+                .then(r => r.text())
+                .then(csv => renderCongNhan(csv, minAge, maxAge, yearNow));
+        }
+
+        function calcAgeByYear(year) {
+            const now = new Date().getFullYear();
+            return now - parseInt(year);
+        }
+
+
+        function renderCongNhan(csv, minAge, maxAge) {
+            const rows = csv.trim().split("\n")
+                .map(r => r.split(",").map(c => c.replace(/"/g, "")));
+
+            let html = `
+    <tr>
+        <th>STT</th>
+        <th>Họ và tên</th>
+        <th>Năm sinh</th>
+        <th>Giới tính</th>
+        <th>Quan hệ</th>
+        <th>CCCD</th>
+        <th>BHYT</th>
+        <th>Điện thoại</th>
+        <th>Ghi chú</th>
+    </tr>`;
+
+            let count = 0;
+
+            for (let i = 1; i < rows.length; i++) {
+                const [
+                    stt, hoten, namYear, nuYear, quanhe,
+                    cccd, bhyt, dienthoai, ghichu
+                ] = rows[i];
+
+                // NAM
+                if (namYear) {
+                    const age = calcAgeByYear(namYear);
+                    if (age >= minAge && age <= maxAge) {
+                        count++;
+                        html += `
+                <tr>
+                    <td>${stt}</td>
+                    <td class="name">${hoten}</td>
+                    <td>${namYear}</td>
+                    <td>Nam</td>
+                    <td>${quanhe}</td>
+                    <td>${cccd}</td>
+                    <td>${bhyt}</td>
+                    <td>${dienthoai}</td>
+                    <td>${ghichu}</td>
+                </tr>`;
+                    }
+                }
+
+                // NỮ
+                if (nuYear) {
+                    const age = calcAgeByYear(nuYear);
+                    if (age >= minAge && age <= maxAge) {
+                        count++;
+                        html += `
+                <tr>
+                    <td>${stt}</td>
+                    <td class="name">${hoten}</td>
+                    <td>${nuYear}</td>
+                    <td>Nữ</td>
+                    <td>${quanhe}</td>
+                    <td>${cccd}</td>
+                    <td>${bhyt}</td>
+                    <td>${dienthoai}</td>
+                    <td>${ghichu}</td>
+                </tr>`;
+                    }
+                }
+            }
+
+            document.getElementById("dataTable").innerHTML = html;
+
+            if (count === 0) {
+                document.getElementById("dataTable").innerHTML += `
+        <tr>
+            <td colspan="9" style="text-align:center;color:#888">
+                Không có dữ liệu phù hợp độ tuổi
+            </td>
+        </tr>`;
+            }
+        }
+        let currentGender = "all";
+
+        function loadCongNhan(type) {
+            let minAge = 18,
+                maxAge = 45;
+            if (type === "18-27") maxAge = 27;
+
+            document.getElementById("breadcrumb").innerText =
+                "Trang chủ / Ấp đội / Công nhân " + minAge + "–" + maxAge;
+
+            document.getElementById("mainContent").innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h3 style="color:#ff6f00">👷 CÔNG NHÂN ${minAge}–${maxAge} TUỔI</h3>
+
+            <div class="gender-filter">
+                <button class="active" onclick="setGender('all',this)">Tất cả</button>
+                <button onclick="setGender('Nam',this)">Nam</button>
+                <button onclick="setGender('Nữ',this)">Nữ</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table id="dataTable"></table>
+        </div>
+    `;
+
+            fetch(sheetURL)
+                .then(r => r.text())
+                .then(csv => renderCongNhan(csv, minAge, maxAge));
+        }
     </script>
+
 
 </body>
 
