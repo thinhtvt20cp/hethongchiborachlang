@@ -1,928 +1,640 @@
+
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Hệ thống Chi bộ Ấp Rạch Lăng</title>
+<meta charset="UTF-8">
+<title>Hệ thống Chi bộ Ấp Rạch Lăng</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial
-        }
-        
-        body {
-            display: flex;
-            height: 100vh;
-            background: #f4f6f8
-        }
-        
-        th:nth-child(1),
-        td:nth-child(1) {
-            width: 60px;
-            text-align: center
-        }
-        /* STT */
-        
-        th:nth-child(3),
-        td:nth-child(3) {
-            width: 80px;
-            text-align: center
-        }
-        /* Nam */
-        
-        th:nth-child(4),
-        td:nth-child(4) {
-            width: 80px;
-            text-align: center
-        }
-        /* Nữ */
-        
-        th:nth-child(5),
-        td:nth-child(5) {
-            width: 90px;
-            text-align: center
-        }
-        /* Quan hệ */
-        
-        th:nth-child(6),
-        td:nth-child(6) {
-            width: 140px
-        }
-        /* CCCD */
-        
-        th:nth-child(7),
-        td:nth-child(7) {
-            width: 140px
-        }
-        /* BHYT */
-        
-        th:nth-child(8),
-        td:nth-child(8) {
-            width: 130px
-        }
-        /* Điện thoại */
-        /* ===== CỘT QUAN HỆ – CỐ ĐỊNH CHỮ ===== */
-        
-        #chuHoTable th:nth-child(5),
-        #chuHoTable td:nth-child(5) {
-            width: 90px;
-            /* cố định độ rộng */
-            
-            min-width: 90px;
-            max-width: 90px;
-            text-align: center;
-            white-space: nowrap;
-            /* KHÔNG xuống dòng */
-            
-            font-weight: 600;
-        }
-        /* ===== TÔ MÀU HÀNG CHỦ HỘ ===== */
-        
-        .tr-chuho {
-            background: #fff3cd !important;
-            /* vàng nhạt */
-            
-            font-weight: 600;
-        }
-        /* ===== ACCOUNT BOTTOM ===== */
-        
-        .account {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #ff6f00;
-            padding: 12px;
-            border-top: 2px solid rgba(255, 255, 255, .3);
-        }
-        
-        .account-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            color: #fff;
-        }
-        
-        .account-info img {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: #fff;
-        }
-        
-        .account-name {
-            font-weight: bold;
-            font-size: 14px;
-        }
-        
-        .account-role {
-            font-size: 12px;
-            opacity: .9;
-        }
-        
-        .account-menu {
-            display: none;
-            position: absolute;
-            bottom: 60px;
-            left: 12px;
-            right: 12px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
-            overflow: hidden;
-        }
-        
-        .account-menu div {
-            padding: 10px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .account-menu div:hover {
-            background: #fff3e6;
-        }
-        
-        .gender-filter button {
-            padding: 6px 14px;
-            border: 1px solid #ff6f00;
-            background: #fff;
-            color: #ff6f00;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .gender-filter button.active {
-            background: #ff6f00;
-            color: #fff;
-        }
-        /* ===== SIDEBAR ===== */
-        
-        .sidebar {
-            width: 300px;
-            background: #ff8c2a;
-            display: flex;
-            flex-direction: column
-        }
-        
-        .sidebar-header {
-            background: #ff6f00;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px
-        }
-        
-        .logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: #fff
-        }
-        
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover
-        }
-        
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            line-height: 1.3
-        }
-        
-        .sidebar {
-            width: 300px;
-            background: #ff8c2a;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        /* ===== MENU ===== */
-        
-        .menu {
-            padding: 15px;
-            overflow: auto
-        }
-        
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, .35);
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600
-        }
-        
-        .menu-item:hover,
-        .menu-item.active {
-            background: #fff;
-            border-left: 6px solid #ff6f00
-        }
-        
-        .menu-item img {
-            width: 28px;
-            height: 28px
-        }
-        
-        .submenu {
-            display: none;
-            margin-left: 38px;
-            margin-bottom: 10px
-        }
-        
-        .submenu-item {
-            padding: 8px 10px;
-            background: rgba(255, 255, 255, .6);
-            border-radius: 5px;
-            margin-bottom: 6px;
-            cursor: pointer;
-            font-size: 14px
-        }
-        
-        .submenu-item:hover {
-            background: #fff
-        }
-        /* ===== CONTENT ===== */
-        
-        .content {
-            flex: 1;
-            background: #fff;
-            padding: 20px;
-            display: flex;
-            flex-direction: column
-        }
-        
-        .top-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px
-        }
-        
-        .top-bar input {
-            flex: 1;
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: none;
-            background: #ff7a00;
-            color: #fff
-        }
-        
-        .top-bar input::placeholder {
-            color: #fff
-        }
-        
-        .top-bar button {
-            border: none;
-            background: #ff7a00;
-            color: #fff;
-            padding: 10px 14px;
-            border-radius: 50%
-        }
-        
-        .breadcrumb {
-            font-size: 14px;
-            margin-bottom: 10px;
-            text-decoration: underline
-        }
-        
-        .content-box {
-            flex: 1;
-            background: #f0f0f0;
-            border-radius: 10px;
-            padding: 15px;
-            overflow: hidden
-        }
-        /* ===== TABLE ===== */
-        
-        .search-box {
-            display: flex;
-            align-items: center;
-            gap: 10px
-        }
-        
-        .search-box input {
-            width: 280px;
-            padding: 8px 12px;
-            border-radius: 20px;
-            border: 1px solid #ccc
-        }
-        
-        .table-wrap {
-            height: 100%;
-            overflow: auto;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, .1)
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px
-        }
-        
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center
-        }
-        
-        th {
-            background: linear-gradient(135deg, #ff8c2a, #ff6f00);
-            color: #fff;
-            position: sticky;
-            top: 0
-        }
-        
-        td.name {
-            text-align: left;
-            min-width: 220px;
-            white-space: nowrap;
-            padding-left: 10px
-        }
-        
-        tr:nth-child(even) {
-            background: #fafafa;
-        }
-        
-        tr:hover {
-            background: #fff3e6;
-        }
-        /* ===== HIGHLIGHT ===== */
-        
-        .highlight {
-            background: #a8d8ff;
-            padding: 2px 4px;
-            border-radius: 3px
-        }
-        /* DÒNG ĐƯỢC TÌM THẤY */
-        
-        .found-row {
-            outline: 3px solid #ff6f00;
-            outline-offset: -2px;
-            background: #ffe0b2 !important;
-        }
-        /* BÔI CHỮ */
-        
-        .highlight {
-            background: #7ecbff;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-    </style>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{display:flex;height:100vh;background:#f4f6f8}
+th:nth-child(1), td:nth-child(1) { width: 60px;  text-align:center } /* STT */
+th:nth-child(3), td:nth-child(3) { width: 80px;  text-align:center } /* Nam */
+th:nth-child(4), td:nth-child(4) { width: 80px;  text-align:center } /* Nữ */
+th:nth-child(5), td:nth-child(5) { width: 90px;  text-align:center } /* Quan hệ */
+th:nth-child(6), td:nth-child(6) { width: 140px } /* CCCD */
+th:nth-child(7), td:nth-child(7) { width: 140px } /* BHYT */
+th:nth-child(8), td:nth-child(8) { width: 130px } /* Điện thoại */
+/* ===== CỘT QUAN HỆ – CỐ ĐỊNH CHỮ ===== */
+#chuHoTable th:nth-child(5),
+#chuHoTable td:nth-child(5) {
+    width: 90px;          /* cố định độ rộng */
+    min-width: 90px;
+    max-width: 90px;
+    text-align: center;
+    white-space: nowrap;  /* KHÔNG xuống dòng */
+    font-weight: 600;
+}
+/* ===== TÔ MÀU HÀNG CHỦ HỘ ===== */
+.tr-chuho {
+    background: #fff3cd !important;   /* vàng nhạt */
+    font-weight: 600;
+}
+/* ===== ACCOUNT BOTTOM ===== */
+.account{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#ff6f00;
+    padding:12px;
+    border-top:2px solid rgba(255,255,255,.3);
+}
+.account-info{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    color:#fff;
+}
+
+.account-info img{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#fff;
+}
+
+.account-name{
+    font-weight:bold;
+    font-size:14px;
+}
+
+.account-role{
+    font-size:12px;
+    opacity:.9;
+}
+
+.account-menu{
+    display:none;
+    position:absolute;
+    bottom:60px;
+    left:12px;
+    right:12px;
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 4px 10px rgba(0,0,0,.15);
+    overflow:hidden;
+}
+
+.account-menu div{
+    padding:10px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.account-menu div:hover{
+    background:#fff3e6;
+}
+
+.gender-filter button{
+    padding:6px 14px;
+    border:1px solid #ff6f00;
+    background:#fff;
+    color:#ff6f00;
+    border-radius:20px;
+    cursor:pointer;
+    font-weight:600;
+}
+.gender-filter button.active{
+    background:#ff6f00;
+    color:#fff;
+}
+.highlight-row{
+    outline:2px solid #2196f3;
+    background:#e3f2fd !important;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:300px;background:#ff8c2a;display:flex;flex-direction:column}
+.sidebar-header{background:#ff6f00;padding:20px;display:flex;align-items:center;gap:15px}
+.logo{width:60px;height:60px;border-radius:50%;overflow:hidden;background:#fff}
+.logo img{width:100%;height:100%;object-fit:cover}
+.title{font-size:18px;font-weight:bold;line-height:1.3}
+.sidebar{
+    width:300px;
+    background:#ff8c2a;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+}
+
+
+/* ===== MENU ===== */
+.menu{padding:15px;overflow:auto}
+.menu-item{
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,.35);
+    padding:12px;margin-bottom:10px;
+    border-radius:6px;cursor:pointer;font-weight:600
+}
+.menu-item:hover,.menu-item.active{
+    background:#fff;border-left:6px solid #ff6f00
+}
+.menu-item img{width:28px;height:28px}
+
+.submenu{display:none;margin-left:38px;margin-bottom:10px}
+.submenu-item{
+    padding:8px 10px;background:rgba(255,255,255,.6);
+    border-radius:5px;margin-bottom:6px;
+    cursor:pointer;font-size:14px
+}
+.submenu-item:hover{background:#fff}
+
+/* ===== CONTENT ===== */
+.content{flex:1;background:#fff;padding:20px;display:flex;flex-direction:column}
+.top-bar{display:flex;gap:10px;margin-bottom:10px}
+.top-bar input{
+    flex:1;padding:10px 15px;border-radius:20px;border:none;
+    background:#ff7a00;color:#fff
+}
+.top-bar input::placeholder{color:#fff}
+.top-bar button{
+    border:none;background:#ff7a00;color:#fff;
+    padding:10px 14px;border-radius:50%
+}
+.breadcrumb{font-size:14px;margin-bottom:10px;text-decoration:underline}
+.content-box{flex:1;background:#f0f0f0;border-radius:10px;padding:15px;overflow:hidden}
+
+/* ===== TABLE ===== */
+.search-box{display:flex;align-items:center;gap:10px}
+.search-box input{
+    width:280px;padding:8px 12px;
+    border-radius:20px;border:1px solid #ccc
+}
+.table-wrap{
+    height:100%;overflow:auto;background:#fff;border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1)
+}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+th{
+    background:linear-gradient(135deg,#ff8c2a,#ff6f00);
+    color:#fff;position:sticky;top:0
+}
+td.name{
+    text-align:left;
+    min-width:220px;
+    white-space:nowrap;
+    padding-left:10px
+}
+tr:nth-child(even){
+    background:#fafafa;
+}
+tr:hover{
+    background:#fff3e6;
+}
+
+
+/* ===== HIGHLIGHT ===== */
+.highlight{
+    background:#a8d8ff;
+    padding:2px 4px;
+    border-radius:3px
+}
+/* DÒNG ĐƯỢC TÌM THẤY */
+.found-row{
+    outline:3px solid #ff6f00;
+    outline-offset:-2px;
+    background:#ffe0b2 !important;
+}
+
+/* BÔI CHỮ */
+.highlight{
+    background:#7ecbff;
+    padding:2px 4px;
+    border-radius:3px;
+}
+
+</style>
 </head>
 
 <body>
 
-    <!-- ===== SIDEBAR ===== -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <img src="https://i.pinimg.com/736x/e5/4c/92/e54c920cc8303e39430071926b72d087.jpg">
-            </div>
-            <div class="title">HỆ THỐNG CHI BỘ
-                <br>ẤP RẠCH LĂNG</div>
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <img src="https://i.pinimg.com/736x/e5/4c/92/e54c920cc8303e39430071926b72d087.jpg">
         </div>
-
-        <!-- ===== ACCOUNT ===== -->
-        <div class="account">
-            <div class="account-info" onclick="toggleAccountMenu()">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-                <div>
-                    <div class="account-name">Admin</div>
-                    <div class="account-role">Quản trị</div>
-                </div>
-            </div>
-
-            <div class="account-menu" id="accountMenu">
-                <div onclick="alert('Chức năng đang phát triển')">🔑 Đổi mật khẩu</div>
-                <div onclick="logout()">🚪 Đăng xuất</div>
-            </div>
-        </div>
-
-        <!-- ===== Menu ===== -->
-
-
-        <div class="menu">
-
-            <div class="menu-item" onclick="toggleSub(this)">
-                <img src="https://png.pngtree.com/png-vector/20220819/ourmid/pngtree-rounded-vector-icon-with-flat-eco-green-color-depicting-demography-chart-vector-png-image_19602230.png">
-                <span>Thông tin nhân khẩu</span>
-            </div>
-
-            <div class="submenu">
-                <div class="submenu-item" onclick="loadDanhSach()">📋 Danh sách nhân khẩu</div>
-                <div class="submenu-item" onclick="loadChuHo()">🏠 Danh sách chủ hộ</div>
-            </div>
-
-
-
-            <div class="menu-item" onclick="loadSimple(this,'Đảng viên Chi bộ')">
-                <img src="https://hienlaptop.com/wp-content/uploads/2024/12/vector-bua-liem-17.png">
-                <span>Đảng viên Chi bộ</span>
-            </div>
-
-            <!-- ===== ẤP ĐỘI ===== -->
-            <div class="menu-item" onclick="toggleSub(this)">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Head_badge_of_the_Vietnam_Self-Defence_Militia.svg/250px-Head_badge_of_the_Vietnam_Self-Defence_Militia.svg.png">
-                <span>Ấp đội</span>
-            </div>
-
-            <div class="submenu">
-
-                <div class="submenu-item" onclick="loadCongNhan('18-45')">
-                    👷 Công nhân 18–45 tuổi
-                </div>
-
-                <div class="submenu-item" onclick="loadCongNhan('18-27')">
-                    👷 Công nhân 18–27 tuổi
-                </div>
-
-                <div class="submenu-item" onclick="loadSimple(this,'Dân quân tự vệ')">
-                    🪖 Dân quân tự vệ
-                </div>
-
-                <!-- NVQS -->
-                <div class="submenu-item" onclick="toggleSub(this)">
-                    🎯 Danh sách NVQS
-                </div>
-
-                <div class="submenu">
-                    <div class="submenu-item" onclick="loadNVQS('dot1')">📄 Sơ tuyển đợt 1</div>
-                    <div class="submenu-item" onclick="loadNVQS('dot2')">🩺 Khám tuyển đợt 2</div>
-                    <div class="submenu-item" onclick="loadNVQS('trungtuyen')">⭐ Trúng tuyển</div>
-                </div>
-
-            </div>
-
-
-
-            <div class="menu-item" onclick="loadSimple(this,'Hội Nông dân')">
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/08/logo-hoi-nong-dan-viet-nam.png">
-                <span>Hội Nông dân</span>
-            </div>
-
-            <div class="menu-item" onclick="loadSimple(this,'Hội Phụ nữ')">
-                <img src="https://upload.wikimedia.org/wikipedia/vi/d/df/Logo_H%E1%BB%99i_LHPN_Vi%E1%BB%87t_Nam.png">
-                <span>Hội Phụ nữ</span>
-            </div>
-
-            <div class="menu-item" onclick="loadSimple(this,'Hội Cựu chiến binh')">
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/08/logo-hoi-cuu-chien-binh-viet-nam.png">
-                <span>Hội Cựu chiến binh</span>
-            </div>
-
-            <div class="menu-item" onclick="loadSimple(this,'Chi đoàn')">
-                <img src="https://upload.wikimedia.org/wikipedia/vi/0/09/Huy_Hi%E1%BB%87u_%C4%90o%C3%A0n.png">
-                <span>Chi đoàn</span>
-            </div>
-
+        <div class="title">HỆ THỐNG CHI BỘ<br>ẤP RẠCH LĂNG</div>
+    </div>
+    
+<!-- ===== ACCOUNT ===== -->
+<div class="account">
+    <div class="account-info" onclick="toggleAccountMenu()">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+        <div>
+            <div class="account-name">Admin</div>
+            <div class="account-role">Quản trị</div>
         </div>
     </div>
 
-    <!-- ===== CONTENT ===== -->
-    <div class="content">
-        <div class="top-bar">
-            <input placeholder="Tìm kiếm toàn hệ thống">
-            <button>🔍</button>
-        </div>
-
-        <div class="breadcrumb" id="breadcrumb">Trang chủ</div>
-
-        <div class="content-box" id="mainContent">
-            Chọn chức năng bên trái để hiển thị dữ liệu
-        </div>
+    <div class="account-menu" id="accountMenu">
+        <div onclick="alert('Chức năng đang phát triển')">🔑 Đổi mật khẩu</div>
+        <div onclick="logout()">🚪 Đăng xuất</div>
     </div>
-
-    <script>
-        const sheetURL =
-            "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-knMwcoxT3R9Qbmr8wAEvGR4YKo4Hdq0_XfRnHJArHkACtqan8RjMV1Zve1a9KiYXUZNBmQO0ssq0/pub?output=csv";
-
-        function toggleSub(el) {
-            const sub = el.nextElementSibling;
-            sub.style.display = sub.style.display === "block" ? "none" : "block";
-        }
-
-        function loadSimple(el, name) {
-            document.getElementById("breadcrumb").innerText =
-                "Trang chủ / " + name;
-
-            document.getElementById("mainContent").innerHTML =
-                `<h3 style="color:#ff6f00">${name}</h3>
-         <p style="margin-top:10px;color:#555">Nội dung đang cập nhật…</p>`;
-        }
-
-        function loadDanhSach() {
-            document.getElementById("breadcrumb").innerText =
-                "Trang chủ / Thông tin nhân khẩu / Danh sách";
-
-            document.getElementById("mainContent").innerHTML = `
-        <div style="display:flex;flex-direction:column;height:100%;gap:10px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-                <h3 style="color:#ff6f00">📋 DANH SÁCH NHÂN KHẨU</h3>
-                <div class="search-box">
-    <input placeholder="Tìm họ tên, năm sinh, CCCD"
-           oninput="quickFilter(this)"
-           onkeydown="handleEnter(event,this)">
-    <button class="nav-btn" onclick="prevResult()">⬆</button>
-    <button class="nav-btn" onclick="nextResult()">⬇</button>
-    <span id="resultCount" style="font-size:13px;color:#555"></span>
 </div>
 
-            </div>
-            <div class="table-wrap">
-                <table id="dataTable"></table>
+<!-- ===== Menu ===== -->
+
+
+    <div class="menu">
+
+        <div class="menu-item" onclick="toggleSub(this)">
+            <img src="https://png.pngtree.com/png-vector/20220819/ourmid/pngtree-rounded-vector-icon-with-flat-eco-green-color-depicting-demography-chart-vector-png-image_19602230.png">
+            <span>Thông tin nhân khẩu</span>
+        </div>
+
+        <div class="submenu">
+            <div class="submenu-item" onclick="loadDanhSach()">📋 Danh sách nhân khẩu</div>
+        <div class="submenu-item" onclick="loadChuHo()">🏠 Danh sách chủ hộ</div>
+        </div>
+        
+    
+
+        <div class="menu-item" onclick="loadSimple(this,'Đảng viên Chi bộ')">
+            <img src="https://hienlaptop.com/wp-content/uploads/2024/12/vector-bua-liem-17.png">
+            <span>Đảng viên Chi bộ</span>
+        </div>
+
+<!-- ===== ẤP ĐỘI ===== -->
+<div class="menu-item" onclick="toggleSub(this)">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Head_badge_of_the_Vietnam_Self-Defence_Militia.svg/250px-Head_badge_of_the_Vietnam_Self-Defence_Militia.svg.png">
+    <span>Ấp đội</span>
+</div>
+
+<div class="submenu">
+<div class="submenu-item" onclick="loadTraCuuCongDan()">
+    🔍 Tra cứu thông tin công dân
+</div>
+
+    <div class="submenu-item" onclick="loadCongNhan('18-45')">
+        👷 Công nhân 18–45 tuổi
+    </div>
+
+    <div class="submenu-item" onclick="loadCongNhan('18-27')">
+        👷 Công nhân 18–27 tuổi
+    </div>
+
+    <div class="submenu-item" onclick="loadSimple(this,'Dân quân tự vệ')">
+        🪖 Dân quân tự vệ
+    </div>
+
+    <!-- NVQS -->
+    <div class="submenu-item" onclick="toggleSub(this)">
+        🎯 Danh sách NVQS
+    </div>
+
+    <div class="submenu">
+        <div class="submenu-item" onclick="loadNVQS('dot1')">📄 Sơ tuyển đợt 1</div>
+        <div class="submenu-item" onclick="loadNVQS('dot2')">🩺 Khám tuyển đợt 2</div>
+        <div class="submenu-item" onclick="loadNVQS('trungtuyen')">⭐ Trúng tuyển</div>
+    </div>
+
+</div>
+
+        
+
+        <div class="menu-item" onclick="loadSimple(this,'Hội Nông dân')">
+            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/08/logo-hoi-nong-dan-viet-nam.png">
+            <span>Hội Nông dân</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Hội Phụ nữ')">
+            <img src="https://upload.wikimedia.org/wikipedia/vi/d/df/Logo_H%E1%BB%99i_LHPN_Vi%E1%BB%87t_Nam.png">
+            <span>Hội Phụ nữ</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Hội Cựu chiến binh')">
+            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/08/logo-hoi-cuu-chien-binh-viet-nam.png">
+            <span>Hội Cựu chiến binh</span>
+        </div>
+
+        <div class="menu-item" onclick="loadSimple(this,'Chi đoàn')">
+            <img src="https://upload.wikimedia.org/wikipedia/vi/0/09/Huy_Hi%E1%BB%87u_%C4%90o%C3%A0n.png">
+            <span>Chi đoàn</span>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="content">
+    <div class="top-bar">
+   <input placeholder="Tra cứu nhanh công dân..."
+       oninput="quickGlobalSearch(this)"
+       onkeydown="if(event.key==='Enter') nextGlobalResult()">
+        <button>🔍</button>
+    </div>
+
+    <div class="breadcrumb" id="breadcrumb">Trang chủ</div>
+
+    <div class="content-box" id="mainContent">
+        Chọn chức năng bên trái để hiển thị dữ liệu
+    </div>
+</div>
+
+<script>
+/* ================== LOGIN ================== */
+const loginUser = JSON.parse(localStorage.getItem("loginUser"));
+if(!loginUser){
+    location.href="login.html";
+}
+
+/* ================== SHEET ================== */
+const sheetURL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vT-knMwcoxT3R9Qbmr8wAEvGR4YKo4Hdq0_XfRnHJArHkACtqan8RjMV1Zve1a9KiYXUZNBmQO0ssq0/pub?output=csv";
+
+/* ================== MENU ================== */
+function toggleSub(el){
+    const sub = el.nextElementSibling;
+    sub.style.display = sub.style.display === "block" ? "none" : "block";
+}
+function loadSimple(el,name){
+    document.getElementById("breadcrumb").innerText = "Trang chủ / " + name;
+    document.getElementById("mainContent").innerHTML =
+        `<h3 style="color:#ff6f00">${name}</h3><p>Đang cập nhật…</p>`;
+}
+
+/* ================== DANH SÁCH NHÂN KHẨU ================== */
+let matchedRows=[], currentIndex=-1;
+
+function loadDanhSach(){
+    document.getElementById("breadcrumb").innerText =
+        "Trang chủ / Thông tin nhân khẩu / Danh sách";
+
+    document.getElementById("mainContent").innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 style="color:#ff6f00">📋 DANH SÁCH NHÂN KHẨU</h3>
+            <div class="search-box">
+                <input placeholder="Tìm họ tên, năm sinh, CCCD"
+                       oninput="quickFilter(this)"
+                       onkeydown="if(event.key==='Enter')nextResult()">
+                <button onclick="prevResult()">⬆</button>
+                <button onclick="nextResult()">⬇</button>
+                <span id="resultCount"></span>
             </div>
         </div>
+        <div class="table-wrap"><table id="dataTable"></table></div>
     `;
+    fetch(sheetURL).then(r=>r.text()).then(renderNhanKhau);
+}
 
-            fetch(sheetURL)
-                .then(r => r.text())
-                .then(csv => renderTable(csv));
-        }
-
-        function renderTable(csv) {
-            const rows = csv.trim().split("\n")
-                .map(r => r.split(",").map(c => c.replace(/"/g, "")));
-
-            let html = `
-    <tr>
-        <th>STT</th>
-        <th>Họ và tên</th>
-        <th>Nam</th>
-        <th>Nữ</th>
-        <th>Quan hệ</th>
-        <th>CCCD</th>
-        <th>BHYT</th>
-        <th>Điện thoại</th>
-        <th>Ghi chú</th>
+function renderNhanKhau(csv){
+    const rows = csv.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+    let html=`<tr>
+        <th>STT</th><th>Họ và tên</th><th>Nam</th><th>Nữ</th>
+        <th>Quan hệ</th><th>CCCD</th><th>BHYT</th><th>Điện thoại</th><th>Ghi chú</th>
     </tr>`;
-
-            for (let i = 1; i < rows.length; i++) {
-                const [
-                    stt, hoten, nam, nu, quanhe, cccd, bhyt, dienthoai, ghichu
-                ] = rows[i];
-
-                html += `
-<tr class="${quanhe === "Chủ hộ" ? "tr-chuho" : ""}">
-    <td>${stt || ""}</td>
-    <td class="name">${hoten || ""}</td>
-    <td>${nam || ""}</td>
-    <td>${nu || ""}</td>
-    <td>${quanhe || ""}</td>
-    <td>${cccd || ""}</td>
-    <td>${bhyt || ""}</td>
-    <td>${dienthoai || ""}</td>
-    <td>${ghichu || ""}</td>
-</tr>`;
-
-            }
-
-            document.getElementById("dataTable").innerHTML = html;
-        }
-
-        function loadChuHo() {
-            document.getElementById("breadcrumb").innerText =
-                "Trang chủ / Thông tin nhân khẩu / Danh sách chủ hộ";
-
-            document.getElementById("mainContent").innerHTML = `
-        <h3 style="color:#ff6f00;margin-bottom:10px">🏠 DANH SÁCH CHỦ HỘ</h3>
-
-        <div class="table-wrap">
-            <table id="chuHoTable"></table>
-        </div>
-    `;
-
-            fetch(sheetURL)
-                .then(r => r.text())
-                .then(csv => renderChuHo(csv));
-        }
-
-        function renderChuHo(csv) {
-            const rows = csv.trim().split("\n")
-                .map(r => r.split(",").map(c => c.replace(/"/g, "")));
-
-            let html = `
-    <tr>
-        <th>STT</th>
-        <th>Họ và tên</th>
-        <th>Nam</th>
-        <th>Nữ</th>
-        <th>Quan hệ</th>
-        <th>CCCD</th>
-        <th>BHYT</th>
-        <th>Điện thoại</th>
-        <th>Ghi chú</th>
-    </tr>`;
-
-            for (let i = 1; i < rows.length; i++) {
-                const [
-                    stt, hoten, nam, nu, quanhe,
-                    cccd, bhyt, dienthoai, ghichu
-                ] = rows[i];
-
-                // CHỈ LẤY CHỦ HỘ
-                if (quanhe !== "Chủ hộ") continue;
-
-                html += `
-        <tr>
-            <td>${stt || ""}</td>
-            <td class="name">${hoten || ""}</td>
-            <td>${nam || ""}</td>
-            <td>${nu || ""}</td>
-            <td>${quanhe || ""}</td>
-            <td>${cccd || ""}</td>
-            <td>${bhyt || ""}</td>
-            <td>${dienthoai || ""}</td>
-            <td>${ghichu || ""}</td>
+    for(let i=1;i<rows.length;i++){
+        const r=rows[i];
+        html+=`
+        <tr class="${r[4]==='Chủ hộ'?'tr-chuho':''}">
+            <td>${r[0]}</td><td class="name">${r[1]}</td>
+            <td>${r[2]}</td><td>${r[3]}</td>
+            <td>${r[4]}</td><td>${r[5]}</td>
+            <td>${r[6]}</td><td>${r[7]}</td><td>${r[8]}</td>
         </tr>`;
-            }
+    }
+    document.getElementById("dataTable").innerHTML=html;
+}
 
-            document.getElementById("chuHoTable").innerHTML = html;
-        }
+/* ===== tìm kiếm ===== */
+function quickFilter(input){
+    const key=input.value.toLowerCase();
+    matchedRows=[]; currentIndex=-1;
+    document.querySelectorAll("#dataTable tr").forEach((row,i)=>{
+        if(i===0) return;
+        row.classList.remove("found-row");
+        row.querySelectorAll("td").forEach(td=>td.innerHTML=td.textContent);
+        if(!key){row.style.display="";return;}
+        const txt=row.innerText.toLowerCase();
+        if(txt.includes(key)){
+            matchedRows.push(row);
+            row.querySelectorAll("td")[1].innerHTML=
+                row.querySelectorAll("td")[1].textContent.replace(
+                    new RegExp(`(${key})`,"gi"),`<span class="highlight">$1</span>`);
+        }else row.style.display="none";
+    });
+    document.getElementById("resultCount").innerText=
+        key?`Có ${matchedRows.length} kết quả`:"";
+}
+function nextResult(){ if(!matchedRows.length)return;
+    currentIndex=(currentIndex+1)%matchedRows.length; jump();}
+function prevResult(){ if(!matchedRows.length)return;
+    currentIndex=(currentIndex-1+matchedRows.length)%matchedRows.length; jump();}
+function jump(){
+    matchedRows.forEach(r=>r.classList.remove("found-row"));
+    matchedRows[currentIndex].classList.add("found-row");
+    matchedRows[currentIndex].scrollIntoView({behavior:"smooth",block:"center"});
+}
 
-        /* ===== TÌM KIẾM CHUẨN – KHÔNG TỔNG QUÁT ===== */
-        let matchedRows = [];
-        let currentIndex = -1;
+/* ================== CÔNG NHÂN ================== */
+function loadCongNhan(type){
+    const min=18, max=(type==="18-27"?27:45);
+    document.getElementById("breadcrumb").innerText =
+        `Trang chủ / Ấp đội / Công nhân ${min}-${max}`;
 
-        /* ===== TÌM KIẾM + BÔI CHỮ ===== */
-        function quickFilter(input) {
-            const key = input.value.trim().toLowerCase();
-            const rows = document.querySelectorAll("#dataTable tr");
+    document.getElementById("mainContent").innerHTML=`
+        <h3 style="color:#ff6f00">👷 CÔNG NHÂN ${min}-${max} TUỔI</h3>
+        <div class="table-wrap"><table id="dataTable"></table></div>`;
 
-            matchedRows = [];
-            currentIndex = -1;
-
-            rows.forEach((row, index) => {
-                if (index === 0) return;
-
-                row.classList.remove("found-row");
-
-                const cells = row.querySelectorAll("td");
-                if (!cells.length) return;
-
-                // reset highlight
-                cells.forEach(td => td.innerHTML = td.textContent);
-
-                if (!key) return;
-
-                const text = (
-                    cells[1].textContent +
-                    cells[2].textContent +
-                    cells[3].textContent +
-                    cells[5].textContent
-                ).toLowerCase();
-
-                if (text.includes(key)) {
-                    matchedRows.push(row);
-
-                    // chỉ bôi chữ trong cột Họ và tên
-                    const regex = new RegExp(`(${key})`, "gi");
-                    cells[1].innerHTML =
-                        cells[1].textContent.replace(
-                            regex,
-                            `<span class="highlight">$1</span>`
-                        );
-                }
-            });
-
-            document.getElementById("resultCount").innerText =
-                key ? `Có ${matchedRows.length} kết quả` : "";
-        }
-
-        /* ===== NHẢY TỚI KẾT QUẢ ===== */
-        function jumpTo(index) {
-            if (index < 0 || index >= matchedRows.length) return;
-
-            matchedRows.forEach(r => r.classList.remove("found-row"));
-
-            const row = matchedRows[index];
-            row.classList.add("found-row");
-
-            row.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-
-            currentIndex = index;
-        }
-
-        /* ===== ENTER → NHẢY TIẾP ===== */
-        function handleEnter(e, input) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                nextResult();
+    fetch(sheetURL).then(r=>r.text()).then(csv=>renderCongNhan(csv,min,max));
+}
+function renderCongNhan(csv,min,max){
+    const year=new Date().getFullYear();
+    const rows=csv.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+    let html=`<tr>
+        <th>STT</th><th>Họ tên</th><th>Năm sinh</th><th>Giới tính</th>
+        <th>Quan hệ</th><th>CCCD</th><th>BHYT</th><th>Điện thoại</th><th>Ghi chú</th>
+    </tr>`;
+    let count=0;
+    for(let i=1;i<rows.length;i++){
+        const r=rows[i];
+        if(r[2]){
+            let age=year-r[2];
+            if(age>=min&&age<=max){
+                count++; html+=rowCN(r,"Nam",r[2]);
             }
         }
-
-        /* ===== NÚT ⬇ ===== */
-        function nextResult() {
-            if (!matchedRows.length) return;
-
-            let next = currentIndex + 1;
-            if (next >= matchedRows.length) next = 0;
-
-            jumpTo(next);
-        }
-
-        /* ===== NÚT ⬆ ===== */
-        function prevResult() {
-            if (!matchedRows.length) return;
-
-            let prev = currentIndex - 1;
-            if (prev < 0) prev = matchedRows.length - 1;
-
-            jumpTo(prev);
-        }
-
-        document.getElementById("accountName").innerText = loginUser.name;
-        document.getElementById("accountRole").innerText =
-            loginUser.role === "admin" ? "Quản trị" :
-            loginUser.role === "staff" ? "Cán bộ" : "Người xem";
-
-        function toggleAccountMenu() {
-            const m = document.getElementById("accountMenu");
-            m.style.display = m.style.display === "block" ? "none" : "block";
-        }
-
-        function logout() {
-            if (confirm("Bạn có chắc muốn đăng xuất?")) {
-                localStorage.removeItem("loginUser");
-                window.location.href = "giaodiends.html";
+        if(r[3]){
+            let age=year-r[3];
+            if(age>=min&&age<=max){
+                count++; html+=rowCN(r,"Nữ",r[3]);
             }
         }
-        const loginUser = JSON.parse(localStorage.getItem("loginUser"));
-        if (!loginUser) {
-            location.href = "login.html";
-        }
-        if (loginUser.role !== "admin") {
-            document.getElementById("menuAccount").style.display = "none";
-        }
-        /* ===== Lọc độ tuổi ===== */
+    }
+    document.getElementById("dataTable").innerHTML=
+        count?html:`<tr><td colspan="9">Không có dữ liệu</td></tr>`;
+}
+function rowCN(r,gt,ns){
+    return `<tr>
+        <td>${r[0]}</td><td class="name">${r[1]}</td>
+        <td>${ns}</td><td>${gt}</td>
+        <td>${r[4]}</td><td>${r[5]}</td>
+        <td>${r[6]}</td><td>${r[7]}</td><td>${r[8]}</td>
+    </tr>`;
+}
 
-        function loadCongNhan(range) {
-            const yearNow = new Date().getFullYear();
-            const minAge = 18;
-            const maxAge = range === "18-27" ? 27 : 45;
+/* ================== TRA CỨU CÔNG DÂN ================== */
+let searchResults=[], searchIndex=-1;
 
-            document.getElementById("breadcrumb").innerText =
-                `Trang chủ / Ấp đội / Công nhân ${minAge}–${maxAge} tuổi`;
+function loadTraCuuCongDan(){
+    document.getElementById("breadcrumb").innerText =
+        "Trang chủ / Ấp đội / Tra cứu công dân";
 
-            document.getElementById("mainContent").innerHTML = `
-        <div style="display:flex;flex-direction:column;height:100%;gap:10px">
-
-            <div style="display:flex;justify-content:space-between;align-items:center">
-                <h3 style="color:#ff6f00">
-                    👷 DANH SÁCH CÔNG NHÂN ${minAge}–${maxAge} TUỔI
-                </h3>
-
-                <div class="search-box">
-                    <select id="genderFilter" onchange="applyGenderFilter()">
-                        <option value="all">Tất cả</option>
-                        <option value="nam">Nam</option>
-                        <option value="nu">Nữ</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="table-wrap">
-                <table id="dataTable"></table>
-            </div>
-
+    document.getElementById("mainContent").innerHTML=`
+        <div style="display:flex;justify-content:space-between">
+            <h3 style="color:#ff6f00">🔍 TRA CỨU CÔNG DÂN</h3>
+            <div><button onclick="prevSearch()">⬆</button>
+                 <button onclick="nextSearch()">⬇</button></div>
         </div>
-    `;
+        <input id="searchInput" placeholder="Tên, năm sinh, CCCD..."
+               oninput="searchCongDan()"
+               onkeydown="if(event.key==='Enter')nextSearch()">
+        <span id="resultCount"></span>
+        <div class="table-wrap"><table id="dataTable"></table></div>`;
+    fetch(sheetURL).then(r=>r.text()).then(renderTraCuu);
+}
+function renderTraCuu(csv){
+    const rows=csv.trim().split("\n").map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+    let html=`<tr>
+        <th>STT</th><th>Họ tên</th><th>Năm sinh</th><th>Giới tính</th>
+        <th>Quan hệ</th><th>CCCD</th><th>BHYT</th><th>Điện thoại</th><th>Ghi chú</th>
+    </tr>`;
+    for(let i=1;i<rows.length;i++){
+        if(rows[i][2]) html+=rowCN(rows[i],"Nam",rows[i][2]);
+        if(rows[i][3]) html+=rowCN(rows[i],"Nữ",rows[i][3]);
+    }
+    document.getElementById("dataTable").innerHTML=html;
+}
+function searchCongDan(){
+    const key=document.getElementById("searchInput").value.toLowerCase();
+    searchResults=[]; searchIndex=-1;
+    document.querySelectorAll("#dataTable tr").forEach((r,i)=>{
+        if(i===0) return;
+        r.classList.remove("found-row");
+        r.querySelectorAll("td").forEach(td=>td.innerHTML=td.textContent);
+        if(!key){r.style.display="";return;}
+        if(r.innerText.toLowerCase().includes(key)){
+            searchResults.push(r);
+            r.querySelectorAll("td").forEach(td=>{
+                td.innerHTML=td.textContent.replace(
+                    new RegExp(`(${key})`,"gi"),`<span class="highlight">$1</span>`);
+            });
+        }else r.style.display="none";
+    });
+    document.getElementById("resultCount").innerText=
+        key?`Tìm thấy ${searchResults.length} kết quả`:"";
+}
+function nextSearch(){ if(!searchResults.length)return;
+    searchIndex=(searchIndex+1)%searchResults.length; jumpSearch();}
+function prevSearch(){ if(!searchResults.length)return;
+    searchIndex=(searchIndex-1+searchResults.length)%searchResults.length; jumpSearch();}
+function jumpSearch(){
+    searchResults.forEach(r=>r.classList.remove("found-row"));
+    searchResults[searchIndex].classList.add("found-row");
+    searchResults[searchIndex].scrollIntoView({behavior:"smooth",block:"center"});
+}
 
-            fetch(sheetURL)
-                .then(r => r.text())
-                .then(csv => renderCongNhan(csv, minAge, maxAge, yearNow));
-        }
+/* ================== ACCOUNT ================== */
+function toggleAccountMenu(){
+    const m=document.getElementById("accountMenu");
+    m.style.display=m.style.display==="block"?"none":"block";
+}
+function logout(){
+    if(confirm("Đăng xuất?")){
+        localStorage.removeItem("loginUser");
+        location.href="login.html";
+    }
+}
 
-        function calcAgeByYear(year) {
-            const now = new Date().getFullYear();
-            return now - parseInt(year);
-        }
+let globalRows = [];
+let globalMatches = [];
+let globalIndex = -1;
 
+/* Load dữ liệu 1 lần */
+fetch(sheetURL)
+    .then(r=>r.text())
+    .then(csv=>{
+        globalRows = csv.trim().split("\n")
+            .slice(1)
+            .map(r=>r.split(",").map(c=>c.replace(/"/g,"")));
+    });
 
-        function renderCongNhan(csv, minAge, maxAge) {
-            const rows = csv.trim().split("\n")
-                .map(r => r.split(",").map(c => c.replace(/"/g, "")));
+/* Tra cứu nhanh */
+function quickGlobalSearch(input){
+    const key = input.value.toLowerCase().trim();
+    globalMatches = [];
+    globalIndex = -1;
 
-            let html = `
+    if(!key){
+        document.getElementById("mainContent").innerHTML =
+            "Nhập từ khóa để tra cứu nhanh";
+        return;
+    }
+
+    let html = `
+    <h3 style="color:#ff6f00">⚡ KẾT QUẢ TRA CỨU NHANH</h3>
+    <div class="table-wrap">
+    <table id="quickTable">
     <tr>
-        <th>STT</th>
-        <th>Họ và tên</th>
-        <th>Năm sinh</th>
-        <th>Giới tính</th>
-        <th>Quan hệ</th>
-        <th>CCCD</th>
-        <th>BHYT</th>
-        <th>Điện thoại</th>
-        <th>Ghi chú</th>
+        <th>STT</th><th>Họ tên</th><th>Năm sinh</th><th>Giới tính</th>
+        <th>Quan hệ</th><th>CCCD</th><th>BHYT</th><th>Điện thoại</th>
     </tr>`;
 
-            let count = 0;
+    globalRows.forEach(r=>{
+        const text = r.join(" ").toLowerCase();
+        if(text.includes(key)){
+            if(r[2]) addQuickRow(r,"Nam",r[2]);
+            if(r[3]) addQuickRow(r,"Nữ",r[3]);
+        }
+    });
 
-            for (let i = 1; i < rows.length; i++) {
-                const [
-                    stt, hoten, namYear, nuYear, quanhe,
-                    cccd, bhyt, dienthoai, ghichu
-                ] = rows[i];
+    html += `</table></div>`;
+    document.getElementById("mainContent").innerHTML = html;
 
-                // NAM
-                if (namYear) {
-                    const age = calcAgeByYear(namYear);
-                    if (age >= minAge && age <= maxAge) {
-                        count++;
-                        html += `
-                <tr>
-                    <td>${stt}</td>
-                    <td class="name">${hoten}</td>
-                    <td>${namYear}</td>
-                    <td>Nam</td>
-                    <td>${quanhe}</td>
-                    <td>${cccd}</td>
-                    <td>${bhyt}</td>
-                    <td>${dienthoai}</td>
-                    <td>${ghichu}</td>
-                </tr>`;
-                    }
-                }
-
-                // NỮ
-                if (nuYear) {
-                    const age = calcAgeByYear(nuYear);
-                    if (age >= minAge && age <= maxAge) {
-                        count++;
-                        html += `
-                <tr>
-                    <td>${stt}</td>
-                    <td class="name">${hoten}</td>
-                    <td>${nuYear}</td>
-                    <td>Nữ</td>
-                    <td>${quanhe}</td>
-                    <td>${cccd}</td>
-                    <td>${bhyt}</td>
-                    <td>${dienthoai}</td>
-                    <td>${ghichu}</td>
-                </tr>`;
-                    }
-                }
-            }
-
-            document.getElementById("dataTable").innerHTML = html;
-
-            if (count === 0) {
-                document.getElementById("dataTable").innerHTML += `
+    function addQuickRow(r,gt,ns){
+        const row = `
         <tr>
-            <td colspan="9" style="text-align:center;color:#888">
-                Không có dữ liệu phù hợp độ tuổi
-            </td>
+            <td>${r[0]}</td>
+            <td class="name">${highlight(r[1],key)}</td>
+            <td>${ns}</td>
+            <td>${gt}</td>
+            <td>${r[4]}</td>
+            <td>${highlight(r[5],key)}</td>
+            <td>${highlight(r[6],key)}</td>
+            <td>${highlight(r[7],key)}</td>
         </tr>`;
-            }
-        }
-        let currentGender = "all";
+        html += row;
+        globalMatches.push(row);
+    }
+}
 
-        function loadCongNhan(type) {
-            let minAge = 18,
-                maxAge = 45;
-            if (type === "18-27") maxAge = 27;
+/* Highlight chữ */
+function highlight(text,key){
+    if(!text) return "";
+    return text.replace(
+        new RegExp(`(${key})`,"gi"),
+        `<span class="highlight">$1</span>`
+    );
+}
 
-            document.getElementById("breadcrumb").innerText =
-                "Trang chủ / Ấp đội / Công nhân " + minAge + "–" + maxAge;
+/* Enter / ⬇ */
+function nextGlobalResult(){
+    const rows = document.querySelectorAll("#quickTable tr");
+    if(rows.length<=1) return;
 
-            document.getElementById("mainContent").innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <h3 style="color:#ff6f00">👷 CÔNG NHÂN ${minAge}–${maxAge} TUỔI</h3>
+    rows.forEach(r=>r.classList.remove("found-row"));
+    globalIndex = (globalIndex+1) % (rows.length-1);
+    const row = rows[globalIndex+1];
+    row.classList.add("found-row");
+    row.scrollIntoView({behavior:"smooth",block:"center"});
+}
 
-            <div class="gender-filter">
-                <button class="active" onclick="setGender('all',this)">Tất cả</button>
-                <button onclick="setGender('Nam',this)">Nam</button>
-                <button onclick="setGender('Nữ',this)">Nữ</button>
-            </div>
-        </div>
 
-        <div class="table-wrap">
-            <table id="dataTable"></table>
-        </div>
-    `;
-
-            fetch(sheetURL)
-                .then(r => r.text())
-                .then(csv => renderCongNhan(csv, minAge, maxAge));
-        }
-    </script>
+</script>
 
 
 </body>
-
 </html>
