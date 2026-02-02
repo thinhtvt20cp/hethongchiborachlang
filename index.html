@@ -632,6 +632,112 @@ function nextGlobalResult(){
     row.scrollIntoView({behavior:"smooth",block:"center"});
 }
 
+let GLOBAL_DATA = [];
+let QUICK_RESULTS = [];
+let QUICK_INDEX = -1;
+
+fetch(sheetURL)
+    .then(r => r.text())
+    .then(csv => {
+        const rows = csv.trim().split("\n")
+            .map(r => r.split(",").map(c => c.replace(/"/g,"")));
+
+        for(let i=1;i<rows.length;i++){
+            const [
+                stt, hoten, nam, nu, quanhe,
+                cccd, bhyt, dienthoai, ghichu
+            ] = rows[i];
+
+            if(nam){
+                GLOBAL_DATA.push({
+                    stt, hoten, namsinh: nam,
+                    gioitinh:"Nam", quanhe, cccd, bhyt, dienthoai, ghichu
+                });
+            }
+            if(nu){
+                GLOBAL_DATA.push({
+                    stt, hoten, namsinh: nu,
+                    gioitinh:"Nữ", quanhe, cccd, bhyt, dienthoai, ghichu
+                });
+            }
+        }
+    });
+let debounceTimer = null;
+
+function quickGlobalSearch(input){
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(()=>{
+        doQuickSearch(input.value.trim().toLowerCase());
+    },150);
+}
+function doQuickSearch(key){
+    QUICK_RESULTS = [];
+    QUICK_INDEX = -1;
+
+    if(!key){
+        document.getElementById("mainContent").innerHTML =
+            "Nhập từ khóa để tra cứu nhanh";
+        return;
+    }
+
+    QUICK_RESULTS = GLOBAL_DATA.filter(d =>
+        d.hoten.toLowerCase().includes(key) ||
+        d.namsinh.includes(key) ||
+        d.cccd.includes(key) ||
+        d.bhyt.includes(key) ||
+        d.dienthoai.includes(key)
+    );
+
+    renderQuickResult(key);
+}
+function renderQuickResult(key){
+    let html = `
+    <h3 style="color:#ff6f00">⚡ TRA CỨU NHANH</h3>
+    <div class="table-wrap">
+    <table id="quickTable">
+    <tr>
+        <th>STT</th><th>Họ tên</th><th>Năm sinh</th>
+        <th>Giới tính</th><th>Quan hệ</th>
+        <th>CCCD</th><th>BHYT</th><th>Điện thoại</th>
+    </tr>`;
+
+    QUICK_RESULTS.forEach(d=>{
+        html += `
+        <tr>
+            <td>${d.stt}</td>
+            <td class="name">${mark(d.hoten,key)}</td>
+            <td>${mark(d.namsinh,key)}</td>
+            <td>${d.gioitinh}</td>
+            <td>${d.quanhe}</td>
+            <td>${mark(d.cccd,key)}</td>
+            <td>${mark(d.bhyt,key)}</td>
+            <td>${mark(d.dienthoai,key)}</td>
+        </tr>`;
+    });
+
+    html += `</table></div>`;
+
+    document.getElementById("mainContent").innerHTML = html;
+}
+function mark(text,key){
+    if(!text) return "";
+    return text.replace(
+        new RegExp(`(${key})`,"gi"),
+        `<span class="highlight">$1</span>`
+    );
+}
+function nextGlobalResult(){
+    const rows = document.querySelectorAll("#quickTable tr");
+    if(rows.length<=1) return;
+
+    rows.forEach(r=>r.classList.remove("found-row"));
+
+    QUICK_INDEX++;
+    if(QUICK_INDEX >= rows.length-1) QUICK_INDEX = 0;
+
+    rows[QUICK_INDEX+1].classList.add("found-row");
+    rows[QUICK_INDEX+1].scrollIntoView({block:"center"});
+}
 
 </script>
 
